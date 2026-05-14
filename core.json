@@ -1,2 +1,47 @@
 [
+{
+  "model": "core.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9eK2PhRAZY8HwZcf8SS1Ok$q76P4m/5gVyh0J8n2I/iJDanZL+DNpzsA5BqhtZ65zY=",
+    "last_login": "2026-05-07T14:40:55.209Z",
+    "is_superuser": true,
+    "email": "a@a.com",
+    "name": null,
+    "is_active": true,
+    "is_staff": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9KHvhGaAm46kP620KdRQw2$45+U6e5fUjLbni9q3eHhPuVc5jbc9vGrqzCYWIchI5o=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "admin1@a.com",
+    "name": "Administrador 1",
+    "is_active": true,
+    "is_staff": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$TCgLKmg9HynL2OFsdNEgaF$7XUpYiMzy5+f5Srj1xufnXalTMhaYzMzec0j/4+EG1U=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "comprador1@a.com",
+    "name": "Comprador1",
+    "is_active": true,
+    "is_staff": true,
+    "groups": [],
+    "user_permissions": []
+  }
+}
 ]
