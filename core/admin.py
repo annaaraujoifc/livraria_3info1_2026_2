@@ -7,7 +7,28 @@ from core.models import Autor, Categoria, Editora, Livro, User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = ('email', 'is_staff', 'is_superuser')
+    search_fields = ('email',)
     ordering = ('email',)
+
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Permissões', {
+            'fields': (
+                'is_active',
+                'is_staff',
+                'is_superuser',
+                'groups',
+                'user_permissions',
+            )
+        }),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
+    )
 
 
 @admin.register(Autor)
