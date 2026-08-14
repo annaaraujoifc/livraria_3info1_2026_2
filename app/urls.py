@@ -11,11 +11,16 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from uploader.router import router as uploader_router
+
+try:
+    from uploader.router import router as uploader_router
+except Exception:
+    uploader_router = None
 
 from core.views import (
     AutorViewSet,
     CategoriaViewSet,
+    CompraViewSet,
     EditoraViewSet,
     LivroViewSet,
     UserRegistrationView,
@@ -29,6 +34,7 @@ router.register(r'autor', AutorViewSet, basename='autor')
 router.register(r'categoria', CategoriaViewSet, basename='categoria')
 router.register(r'editora', EditoraViewSet, basename='editora')
 router.register(r'livro', LivroViewSet, basename='livro')
+router.register(r'compras', CompraViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,5 +58,7 @@ urlpatterns = [
     path('api/registro/', UserRegistrationView.as_view(), name='user_registration'),
     # API
     path('api/', include(router.urls)),
-    path('api/media/', include(uploader_router.urls)),
 ]
+
+if uploader_router:
+    urlpatterns += [path('api/media/', include(uploader_router.urls))]
