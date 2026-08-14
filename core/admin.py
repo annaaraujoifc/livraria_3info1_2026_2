@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from core.models import Autor, Categoria, Editora, Livro, User
+from core.models import Autor, Categoria, Compra, Editora, Livro, User
 
 
 @admin.register(User)
@@ -72,3 +72,10 @@ class LivroAdmin(admin.ModelAdmin):
     list_filter = ('editora', 'categoria')
     ordering = ('titulo', 'editora', 'categoria')
     list_per_page = 25
+
+
+@admin.register(Compra)
+class CompraAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'status')
+    ordering = ('usuario', 'status')
+    list_per_page = 10
