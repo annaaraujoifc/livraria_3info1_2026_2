@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
     DateTimeField,
+    DecimalField,
     HiddenField,
     ModelSerializer,
     SerializerMethodField,
@@ -14,9 +15,7 @@ from core.models import Compra, ItensCompra
 
 class ItensCompraCreateUpdateSerializer(ModelSerializer):
     # O preço é definido no servidor no momento em que o item é gravado.
-    preco = rest_framework_field = __import__('rest_framework.serializers', fromlist=['DecimalField']).DecimalField(
-        max_digits=7, decimal_places=2, read_only=True
-    )
+    preco = DecimalField(max_digits=7, decimal_places=2, read_only=True)
 
     class Meta:
         model = ItensCompra
@@ -39,7 +38,7 @@ class CompraCreateUpdateSerializer(ModelSerializer):
 
     class Meta:
         model = Compra
-        fields = ('id', 'usuario', 'itens')
+        fields = ('id', 'usuario', 'tipo_pagamento', 'itens')
 
     def validate(self, attrs):
         compra = getattr(self, 'instance', None)
