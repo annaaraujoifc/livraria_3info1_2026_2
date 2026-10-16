@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
             name='preco',
             field=models.DecimalField(default=0, max_digits=7, decimal_places=2),
         ),
+        migrations.RunPython(preencher_preco_historico, migrations.RunPython.noop),
         migrations.AddField(
             model_name='compra',
             name='data',
