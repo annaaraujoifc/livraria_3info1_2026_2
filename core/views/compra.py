@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Sum
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -85,18 +84,24 @@ class CompraViewSet(ModelViewSet):
             for livro in Livro.objects.select_for_update().filter(pk__in=livro_ids).order_by('pk')
         }
 
+        # Somar quantidades por livro: um carrinho pode conter linhas repetidas.
+        solicitadas = {}
         for item in itens:
-            livro = livros[item.livro_id]
-            if item.quantidade > livro.quantidade:
+            solicitadas[item.livro_id] = solicitadas.get(item.livro_id, 0) + item.quantidade
+
+        for livro_id, quantidade in solicitadas.items():
+            livro = livros[livro_id]
+            if quantidade > livro.quantidade:
                 return Response({
                     'status': 'Quantidade insuficiente',
                     'livro': livro.titulo,
                     'quantidade_disponivel': livro.quantidade,
+                    'quantidade_solicitada': quantidade,
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-        for item in itens:
-            livro = livros[item.livro_id]
-            livro.quantidade -= item.quantidade
+        for livro_id, quantidade in solicitadas.items():
+            livro = livros[livro_id]
+            livro.quantidade -= quantidade
             livro.save(update_fields=['quantidade'])
 
         compra.status = Compra.StatusCompra.FINALIZADO
