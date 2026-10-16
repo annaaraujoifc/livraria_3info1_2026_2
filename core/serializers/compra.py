@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
+    DateTimeField,
     HiddenField,
     ModelSerializer,
     SerializerMethodField,
@@ -14,7 +15,7 @@ from core.models import Compra, ItensCompra
 class ItensCompraCreateUpdateSerializer(ModelSerializer):
     class Meta:
         model = ItensCompra
-        fields = ('livro', 'quantidade')
+        fields = ('livro', 'quantidade', 'preco')
 
     def validate_quantidade(self, quantidade):
         if quantidade <= 0:
@@ -40,26 +41,37 @@ class CompraCreateUpdateSerializer(ModelSerializer):
         itens_data = validated_data.pop('itens')
         compra = Compra.objects.create(**validated_data)
         for item_data in itens_data:
+            item_data['preco'] = item_data['livro'].preco
             ItensCompra.objects.create(compra=compra, **item_data)
-        compra.save()
         return compra
+
+    @transaction.atomic
+    def update(self, compra, validated_data):
+        itens_data = validated_data.pop('itens', None)
+        if itens_data is not None:
+            compra.itens.all().delete()
+            for item_data in itens_data:
+                item_data['preco'] = item_data['livro'].preco
+                ItensCompra.objects.create(compra=compra, **item_data)
+        return super().update(compra, validated_data)
 
 
 class ItensCompraSerializer(ModelSerializer):
     total = SerializerMethodField()
 
     def get_total(self, instance):
-        return instance.livro.preco * instance.quantidade
+        return instance.quantidade * instance.preco
 
     class Meta:
         model = ItensCompra
-        fields = ('livro', 'quantidade', 'total')
+        fields = ('livro', 'quantidade', 'preco', 'total')
         depth = 1
 
 
 class CompraSerializer(ModelSerializer):
     usuario = CharField(source='usuario.email', read_only=True)
     status = CharField(source='get_status_display', read_only=True)
+    data = DateTimeField(read_only=True)
     itens = ItensCompraSerializer(many=True, read_only=True)
     total = SerializerMethodField()
 
@@ -68,4 +80,4 @@ class CompraSerializer(ModelSerializer):
 
     class Meta:
         model = Compra
-        fields = ('id', 'usuario', 'status', 'total', 'itens')
+        fields = ('id', 'usuario', 'status', 'total', 'data', 'itens')
