@@ -17,11 +17,7 @@ class UserAdmin(BaseUserAdmin):
             'Permissões',
             {
                 'fields': (
-                    'is_active',
-                    'is_staff',
-                    'is_superuser',
-                    'groups',
-                    'user_permissions',
+                    'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions',
                 )
             },
         ),
@@ -76,18 +72,22 @@ class LivroAdmin(admin.ModelAdmin):
 
 class ItensCompraInline(admin.TabularInline):
     model = ItensCompra
-    extra = 1  # Quantidade de itens adicionais
+    extra = 1
 
 
 @admin.register(Compra)
 class CompraAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'status', 'total_formatado', 'data', 'tipo_pagamento')
-    ordering = ('usuario', 'status', 'data')
+    list_display = (
+        'usuario', 'status', 'total_formatado', 'data_criacao',
+        'data_atualizacao', 'tipo_pagamento',
+    )
+    ordering = ('usuario', 'status', 'data_criacao')
+    list_filter = ('status', 'data_criacao', 'tipo_pagamento')
+    search_fields = ('usuario__email',)
     list_per_page = 10
     inlines = [ItensCompraInline]
-    readonly_fields = ('total_formatado', 'data')
+    readonly_fields = ('total_formatado', 'data_criacao', 'data_atualizacao')
 
     @admin.display(description='Total')
     def total_formatado(self, obj):
-        """Exibe R$ 123,45 calculando a soma dos itens da compra."""
         return f'R$ {obj.total:.2f}'
