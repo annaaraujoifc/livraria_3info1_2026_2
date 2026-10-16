@@ -22,7 +22,8 @@ class Compra(models.Model):
 
     usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name='compras')
     status = models.IntegerField(choices=StatusCompra.choices, default=StatusCompra.CARRINHO)
-    data = models.DateTimeField(auto_now_add=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
     tipo_pagamento = models.IntegerField(
         choices=TipoPagamento.choices,
         default=TipoPagamento.CARTAO_CREDITO,
@@ -30,7 +31,7 @@ class Compra(models.Model):
 
     @property
     def total(self):
-        return sum(item.preco * item.quantidade for item in self.itens.all())
+        return sum((item.total for item in self.itens.all()), start=0)
 
 
 class ItensCompra(models.Model):

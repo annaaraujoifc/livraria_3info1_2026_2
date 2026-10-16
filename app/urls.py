@@ -34,7 +34,7 @@ router.register(r'autor', AutorViewSet, basename='autor')
 router.register(r'categoria', CategoriaViewSet, basename='categoria')
 router.register(r'editora', EditoraViewSet, basename='editora')
 router.register(r'livro', LivroViewSet, basename='livro')
-router.register(r'compras', CompraViewSet)
+router.register(r'compras', CompraViewSet, basename='compra')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

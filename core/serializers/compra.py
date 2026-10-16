@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
     DateTimeField,
+    DecimalField,
     HiddenField,
     ModelSerializer,
     SerializerMethodField,
@@ -13,6 +14,9 @@ from core.models import Compra, ItensCompra
 
 
 class ItensCompraCreateUpdateSerializer(ModelSerializer):
+    # O preço é definido no servidor no momento em que o item é gravado.
+    preco = DecimalField(max_digits=7, decimal_places=2, read_only=True)
+
     class Meta:
         model = ItensCompra
         fields = ('livro', 'quantidade', 'preco')
@@ -34,7 +38,13 @@ class CompraCreateUpdateSerializer(ModelSerializer):
 
     class Meta:
         model = Compra
-        fields = ('id', 'usuario', 'itens')
+        fields = ('id', 'usuario', 'tipo_pagamento', 'itens')
+
+    def validate(self, attrs):
+        compra = getattr(self, 'instance', None)
+        if compra and compra.status != Compra.StatusCompra.CARRINHO:
+            raise ValidationError('Somente compras no carrinho podem ser alteradas.')
+        return attrs
 
     @transaction.atomic
     def create(self, validated_data):
@@ -60,7 +70,7 @@ class ItensCompraSerializer(ModelSerializer):
     total = SerializerMethodField()
 
     def get_total(self, instance):
-        return instance.quantidade * instance.preco
+        return instance.total
 
     class Meta:
         model = ItensCompra
@@ -71,7 +81,8 @@ class ItensCompraSerializer(ModelSerializer):
 class CompraSerializer(ModelSerializer):
     usuario = CharField(source='usuario.email', read_only=True)
     status = CharField(source='get_status_display', read_only=True)
-    data = DateTimeField(read_only=True)
+    data_criacao = DateTimeField(read_only=True)
+    data_atualizacao = DateTimeField(read_only=True)
     tipo_pagamento = CharField(source='get_tipo_pagamento_display', read_only=True)
     itens = ItensCompraSerializer(many=True, read_only=True)
     total = SerializerMethodField()
@@ -81,4 +92,7 @@ class CompraSerializer(ModelSerializer):
 
     class Meta:
         model = Compra
-        fields = ('id', 'usuario', 'status', 'total', 'data', 'tipo_pagamento', 'itens')
+        fields = (
+            'id', 'usuario', 'status', 'total', 'data_criacao',
+            'data_atualizacao', 'tipo_pagamento', 'itens',
+        )
