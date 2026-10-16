@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Q, Sum
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
@@ -21,7 +22,7 @@ class LivroViewSet(ModelViewSet):
 
     @extend_schema(
         request=LivroAlterarPrecoSerializer,
-        responses={200: dict},
+        responses={200: OpenApiTypes.OBJECT},
         description='Altera o preço de um livro específico.',
         summary='Alterar preço do livro',
     )
