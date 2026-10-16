@@ -11,7 +11,12 @@ class LivroSerializer(ModelSerializer):
 
 
 class LivroAlterarPrecoSerializer(Serializer):
-    preco = serializers.DecimalField(max_digits=7, decimal_places=2, min_value=0)
+    preco = serializers.DecimalField(max_digits=7, decimal_places=2)
+
+    def validate_preco(self, preco):
+        if preco <= 0:
+            raise ValidationError('O preço deve ser um valor positivo.')
+        return preco
 
 
 class LivroMaisVendidoSerializer(Serializer):
