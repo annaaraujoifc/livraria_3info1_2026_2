@@ -3,6 +3,13 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def preencher_preco_historico(apps, schema_editor):
+    Item = apps.get_model('core', 'ItensCompra')
+    for item in Item.objects.select_related('livro').all().iterator():
+        item.preco = item.livro.preco
+        item.save(update_fields=['preco'])
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ('core', '0013_itenscompra'),
