@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
@@ -34,7 +35,7 @@ class CompraViewSet(ModelViewSet):
 
     @extend_schema(
         request=None,
-        responses={200: dict},
+        responses={200: OpenApiTypes.OBJECT},
         description='Relatório das compras finalizadas no mês atual.',
         summary='Relatório de vendas do mês',
     )
@@ -55,7 +56,7 @@ class CompraViewSet(ModelViewSet):
 
     @extend_schema(
         request=None,
-        responses={200: dict, 400: dict},
+        responses={200: OpenApiTypes.OBJECT, 400: OpenApiTypes.OBJECT},
         description='Finaliza o carrinho e baixa os livros do estoque.',
         summary='Finalizar compra',
     )
