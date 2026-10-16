@@ -81,18 +81,13 @@ class ItensCompraInline(admin.TabularInline):
 
 @admin.register(Compra)
 class CompraAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'status', 'total_formatado')
-    ordering = ('usuario', 'status')
+    list_display = ('usuario', 'status', 'total_formatado', 'data', 'tipo_pagamento')
+    ordering = ('usuario', 'status', 'data')
     list_per_page = 10
     inlines = [ItensCompraInline]
-    readonly_fields = ('total_formatado',)
+    readonly_fields = ('total_formatado', 'data')
 
     @admin.display(description='Total')
     def total_formatado(self, obj):
         """Exibe R$ 123,45 calculando a soma dos itens da compra."""
-        total = 0
-        for item in getattr(obj, 'itens').all():
-            preco = getattr(item.livro, 'preco', 0) or 0
-            qtd = getattr(item, 'quantidade', 0) or 0
-            total += preco * qtd
-        return f'R$ {total:.2f}'
+        return f'R$ {obj.total:.2f}'
