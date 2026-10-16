@@ -70,6 +70,17 @@ class CompraTutorialAPITests(TestCase):
         self.assertEqual(self.livro.quantidade, 2)
         self.assertEqual(compra.status, Compra.StatusCompra.CARRINHO)
 
+
+    def test_finalizacao_soma_linhas_repetidas_do_mesmo_livro(self):
+        compra = self.criar_compra([
+            {'livro': self.livro.pk, 'quantidade': 5},
+            {'livro': self.livro.pk, 'quantidade': 5},
+        ])
+        response = self.client.post(f'/api/compras/{compra.pk}/finalizar/', {}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.livro.refresh_from_db()
+        self.assertEqual(self.livro.quantidade, 8)
+
     def test_usuario_nao_consulta_compra_de_outro(self):
         compra = self.criar_compra([{'livro': self.livro.pk, 'quantidade': 1}])
         outro = User.objects.create_user(email='outro@example.com', password='SenhaSegura123')
